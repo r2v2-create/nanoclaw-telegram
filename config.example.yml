@@ -1,0 +1,23 @@
+# nanoclaw-telegram configuration
+# Copy to /etc/nanoclaw/telegram-config.yml and fill in values.
+# Tokens can be left blank here if using AWS Secrets Manager (recommended).
+
+# ─── Agent list ───────────────────────────────────────────────────────────────
+agents:
+  - name: K2-Auto
+    token: ""          # Leave blank → injected from Secrets Manager (k2-auto_token)
+    url: "http://44.200.164.83:8001"
+
+  - name: Omaha
+    token: ""          # Leave blank → injected from Secrets Manager (omaha_token)
+    url: "http://18.234.160.215:8002"
+
+# ─── AWS Secrets Manager ──────────────────────────────────────────────────────
+# Path to a secret containing per-agent tokens as JSON:
+#   { "k2-auto_token": "...", "omaha_token": "..." }
+secrets_manager_path: "nanoclaw/telegram"
+aws_region: "us-east-1"
+
+# ─── Tuning ───────────────────────────────────────────────────────────────────
+poll_interval: 1       # seconds between Telegram polls
+health_port: 9999      # localhost health check port (GET /health)

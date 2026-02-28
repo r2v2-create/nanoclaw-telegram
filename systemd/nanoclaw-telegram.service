@@ -1,0 +1,29 @@
+[Unit]
+Description=nanoclaw-telegram — Telegram bot bridge for OpenClaw agents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/nanoclaw-telegram
+
+ExecStart=/opt/nanoclaw-telegram/venv/bin/python /opt/nanoclaw-telegram/telegram_bot.py
+
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nanoclaw-telegram
+
+# Config
+Environment=NANOCLAW_CONFIG=/etc/nanoclaw/telegram-config.yml
+Environment=LOG_LEVEL=INFO
+# Optional: override via env if not using Secrets Manager
+# Environment=AGENT_0_NAME=K2-Auto
+# Environment=AGENT_0_TOKEN=your_token_here
+# Environment=AGENT_0_URL=http://44.200.164.83:8001
+
+[Install]
+WantedBy=multi-user.target
