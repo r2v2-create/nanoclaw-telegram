@@ -122,19 +122,10 @@ def send_typing(token, chat_id):
     tg_request("sendChatAction", token, json={"chat_id": chat_id, "action": "typing"})
 
 
-def query_agent(agent_url: str, agent_name: str, prompt: str) -> str:
-    task_id = f"tg-{int(time.time())}"
-    try:
-        resp = requests.post(f"{agent_url}/api/tasks/webhook",
-            json={"goal": prompt, "task_id": task_id, "callback_url": "http://localhost:9999/callback", "priority": "high"},
-            timeout=30)
-        if resp.status_code in (200, 202):
-            return f"✅ Task queued by {agent_name}. You'll receive updates as it progresses."
-    except Exception:
-        pass
+def query_agent(agent_url: str, agent_name: str, prompt: str, user_id: str = "") -> str:
     try:
         resp = requests.post(f"{agent_url}/api/chat",
-            json={"message": prompt, "task_id": task_id}, timeout=60)
+            json={"message": prompt, "user_id": user_id}, timeout=120)
         if resp.status_code == 200:
             data = resp.json()
             return data.get("response") or data.get("message") or str(data)
@@ -214,7 +205,7 @@ def poll_agent(agent: dict, poll_interval: float):
 
                 log.info(f"[{name}] {username} ({chat_id}): {text[:80]}")
                 send_typing(token, chat_id)
-                reply = query_agent(url, name, text)
+                reply = query_agent(url, name, text, user_id=str(chat_id))
                 send_message(token, chat_id, f"🤖 *{name}*:\n\n{reply}")
 
         except requests.Timeout:
